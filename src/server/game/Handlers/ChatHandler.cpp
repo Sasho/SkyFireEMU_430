@@ -99,8 +99,8 @@ void WorldSession::HandleMessagechatOpcode(WorldPacket & recv_data)
         case CMSG_MESSAGECHAT_PARTY:
             type = CHAT_MSG_PARTY;
             break;
-        case CMSG_MESSAGECHAT_PARTY_LEADER:
-            type = CHAT_MSG_PARTY_LEADER;
+        //case CMSG_MESSAGECHAT_PARTY_LEADER:
+        //    type = CHAT_MSG_PARTY_LEADER;
             break;
         case CMSG_MESSAGECHAT_RAID:
             type = CHAT_MSG_RAID;
