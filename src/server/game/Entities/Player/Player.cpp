@@ -2069,7 +2069,7 @@ uint8 Player::GetChatTag() const
 
 void Player::SendTeleportPacket(Position &oldPos)
 {
-    WorldPacket data2(MSG_MOVE_TELEPORT, 38);
+    WorldPacket data2(SMSG_MOVE_TELEPORT, 38);
     data2.append(GetPackGUID());
     BuildMovementPacket(&data2);
     Relocate(&oldPos);
@@ -2078,7 +2078,7 @@ void Player::SendTeleportPacket(Position &oldPos)
 
 void Player::SendTeleportAckPacket()
 {
-    WorldPacket data(MSG_MOVE_TELEPORT_ACK, 41);
+    WorldPacket data(CMSG_MOVE_TELEPORT_ACK, 41);
     data.append(GetPackGUID());
     data << uint32(0);                                     // this value increments every time
     BuildMovementPacket(&data);
@@ -5087,10 +5087,10 @@ void Player::SetMovement(PlayerMovementType pType)
     WorldPacket data;
     switch (pType)
     {
-        case MOVE_ROOT:       data.Initialize(SMSG_FORCE_MOVE_ROOT,   GetPackGUID().size()+4); break;
-        case MOVE_UNROOT:     data.Initialize(SMSG_FORCE_MOVE_UNROOT, GetPackGUID().size()+4); break;
-        case MOVE_WATER_WALK: data.Initialize(SMSG_MOVE_WATER_WALK,   GetPackGUID().size()+4); break;
-        case MOVE_LAND_WALK:  data.Initialize(SMSG_MOVE_LAND_WALK,    GetPackGUID().size()+4); break;
+        case MOVE_ROOT:       data.Initialize(SMSG_MOVE_ROOT,   GetPackGUID().size()+4); break;
+        case MOVE_UNROOT:     data.Initialize(SMSG_MOVE_UNROOT, GetPackGUID().size()+4); break;
+        case MOVE_WATER_WALK: data.Initialize(SMSG_MOVE_SET_WATER_WALK,   GetPackGUID().size()+4); break;
+        case MOVE_LAND_WALK:  data.Initialize(SMSG_MOVE_SET_LAND_WALK,    GetPackGUID().size()+4); break;
         default:
             sLog->outError("Player::SetMovement: Unsupported move type (%d), data not sent to client.", pType);
             return;
@@ -7361,7 +7361,7 @@ bool Player::RewardHonor(Unit *uVictim, uint32 groupsize, int32 honor, bool pvpt
 
 void Player::SendCurrencies() const
 {
-    WorldPacket packet(SMSG_INIT_CURRENCY, 4 + _currencies.size()*(5*4 + 1));
+    WorldPacket packet(SMSG_SETUP_CURRENCY, 4 + _currencies.size()*(5*4 + 1));
     packet << uint32(_currencies.size());
 
     for (PlayerCurrenciesMap::const_iterator itr = _currencies.begin(); itr != _currencies.end(); ++itr)
@@ -7471,7 +7471,7 @@ void Player::ModifyCurrency(uint32 id, int32 count, bool force)
             // if (count > 0)
               // GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_CURRENCY, id, count);    // todo
 
-            WorldPacket packet(SMSG_UPDATE_CURRENCY, 12);
+            WorldPacket packet(SMSG_SET_CURRENCY, 12);
             packet << uint32(id);
             packet << uint32(weekCap ? (newWeekCount / PLAYER_CURRENCY_PRECISION) : 0);
             packet << uint32(newTotalCount / PLAYER_CURRENCY_PRECISION);
@@ -16829,7 +16829,7 @@ void Player::SendQuestReward(Quest const *quest, uint32 XP, Object * questGiver)
     uint32 questid = quest->GetQuestId();
     sLog->outDebug(LOG_FILTER_NETWORKIO, "WORLD: Sent SMSG_QUESTGIVER_QUEST_COMPLETE quest = %u", questid);
     sGameEventMgr->HandleQuestComplete(questid);
-    WorldPacket data(SMSG_QUESTGIVER_QUEST_COMPLETE, (4+4+4+4+4));
+    WorldPacket data(SMSG_QUESTUPDATE_COMPLETE, (4+4+4+4+4));
     data << uint8(0x80); // unk 4.0.1 flags
     data << uint32(quest->GetRewSkillLineId());
     data << uint32(questid);
@@ -16922,7 +16922,7 @@ void Player::SendPushToPartyResponse(Player *player, uint32 msg)
 
 void Player::SendQuestUpdateAddItem(Quest const* /*quest*/, uint32 /*item_idx*/, uint16 /*count*/)
 {
-    WorldPacket data(SMSG_QUESTUPDATE_ADD_ITEM, 0);
+    WorldPacket data(SMSG_QUESTGIVER_REQUEST_ITEMS, 0);
     sLog->outDebug(LOG_FILTER_NETWORKIO, "WORLD: Sent SMSG_QUESTUPDATE_ADD_ITEM");
     //data << quest->ReqItemId[item_idx];
     //data << count;
@@ -24702,7 +24702,7 @@ void Player::LearnPetTalent(uint64 petGuid, uint32 talentId, uint32 talentRank)
 
 void Player::UpdateFallInformationIfNeed(MovementInfo const& minfo, uint32 opcode)
 {
-    if (_lastFallTime >= minfo.fallTime || _lastFallZ <= minfo.pos.GetPositionZ() || opcode == MSG_MOVE_FALL_LAND)
+    if (_lastFallTime >= minfo.fallTime || _lastFallZ <= minfo.pos.GetPositionZ() || opcode == CMSG_MOVE_FALL_LAND)
         SetFallInformation(minfo.fallTime, minfo.pos.GetPositionZ());
 }
 
@@ -24953,7 +24953,7 @@ void Player::BuildEnchantmentsInfoData(WorldPacket *data)
 void Player::SendEquipmentSetList()
 {
     uint32 count = 0;
-    WorldPacket data(SMSG_EQUIPMENT_SET_LIST, 4);
+    WorldPacket data(SMSG_LOAD_EQUIPMENT_SET, 4);
     size_t count_pos = data.wpos();
     data << uint32(count);                                  // count placeholder
     for (EquipmentSets::iterator itr = m_EquipmentSets.begin(); itr != m_EquipmentSets.end(); ++itr)
@@ -25005,7 +25005,7 @@ void Player::SetEquipmentSet(uint32 index, EquipmentSet eqset)
     {
         eqslot.Guid = sObjectMgr->GenerateEquipmentSetGuid();
 
-        WorldPacket data(SMSG_EQUIPMENT_SET_SAVED, 4 + 1);
+        WorldPacket data(CMSG_SAVE_EQUIPMENT_SET, 4 + 1);
         data << uint32(index);
         data.appendPackGUID(eqslot.Guid);
         GetSession()->SendPacket(&data);
@@ -25459,7 +25459,7 @@ void Player::ResetTimeSync()
 
 void Player::SendTimeSync()
 {
-    WorldPacket data(SMSG_TIME_SYNC_REQ, 4);
+    WorldPacket data(SMSG_TIME_SYNC_REQUEST, 4);
     data << uint32(m_timeSyncCounter++);
     GetSession()->SendPacket(&data);
 
@@ -25528,7 +25528,7 @@ void Player::SendRefundInfo(Item *item)
         return;
     }
 
-    WorldPacket data(SMSG_ITEM_REFUND_INFO_RESPONSE, 4*5+4*5+4+4*5+4*5+4+8+4);
+    WorldPacket data(SMSG_ITEM_PURCHASE_REFUND_RESULT, 4*5+4*5+4+4*5+4*5+4+8+4);
     for (uint8 i = 0; i < MAX_ITEM_EXT_COST_ITEMS; ++i) // item cost
     {
         data << uint32(iece->RequiredItemCount[i]);     // 4.06: count before id
@@ -25580,7 +25580,7 @@ void Player::RefundItem(Item *item)
     if (item->IsRefundExpired())    // item refund has expired
     {
         item->SetNotRefundable(this);
-        WorldPacket data(SMSG_ITEM_REFUND_RESULT, 1+8+1);
+        WorldPacket data(SMSG_ITEM_EXPIRE_PURCHASE_REFUND, 1+8+1);
         data << uint8(0x00);                         // refund failed
         data << uint64(item->GetGUID());             // Guid
         data << uint8(1);                            // item can't be refunded
@@ -25622,7 +25622,7 @@ void Player::RefundItem(Item *item)
 
     if (store_error)
     {
-        WorldPacket data(SMSG_ITEM_REFUND_RESULT, 1+8+1);
+        WorldPacket data(SMSG_ITEM_PURCHASE_REFUND_RESULT, 1+8+1);
         data << uint8(0x00);                         // refund failed
         data << uint64(item->GetGUID());             // Guid
         data << uint8(9);                            // bag is full
@@ -25653,14 +25653,14 @@ void Player::RefundItem(Item *item)
 
     if (store_error)
     {
-        WorldPacket data(SMSG_ITEM_REFUND_RESULT, 8+4);  //Checked for 406
+        WorldPacket data(SMSG_ITEM_PURCHASE_REFUND_RESULT, 8+4);  //Checked for 406
         data << uint64(item->GetGUID());                 // Guid
         data << uint32(10);                              // Error!
         GetSession()->SendPacket(&data);
         return;
     }
 
-    WorldPacket data(SMSG_ITEM_REFUND_RESULT, 8+4+4+4+4+4*4+4*4); // Checked for 406
+    WorldPacket data(SMSG_ITEM_PURCHASE_REFUND_RESULT, 8+4+4+4+4+4*4+4*4); // Checked for 406
     data << uint64(item->GetGUID());                    // item guid
     data << uint32(0);                                  // 0, or error code
     data << uint32(item->GetPaidMoney());               // money cost
