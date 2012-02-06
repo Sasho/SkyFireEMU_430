@@ -297,7 +297,7 @@ void GuildAchievementMgr::SendAllAchievementData()
 
     SendDirectMessageToAll(&data);
 
-    WorldPacket data2(SMSG_GUILD_CRITERIA_DATA);
+    WorldPacket data2(SMSG_GUILD_CRITERIA_UPDATE);
 
     data2 << uint32(m_criteriaProgress.size());
 
