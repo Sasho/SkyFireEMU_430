@@ -195,7 +195,7 @@ void BattlegroundMgr::BuildBattlegroundStatusPacket(WorldPacket *data, Battlegro
     case STATUS_WAIT_QUEUE:
         {
             // The client will set STATUS_WAIT_QUEUE at BGInfo once it receives this packet
-            data->Initialize(SMSG_JOINED_BATTLEGROUND_QUEUE, (1+1+4+4+4+1+8+1+4)); // Checked for 406
+            data->Initialize(SMSG_BATTLEFIELD_STATUS_QUEUED, (1+1+4+4+4+1+8+1+4)); // Checked for 406
             *data << uint8(0x20);                              // packed flag, seems to be always 0x20 for non-rated non-arena bgs
             *data << uint8(bg->GetMaxLevel());                 // max level
             *data << uint32(Time1);                            // avg wait time
@@ -292,7 +292,7 @@ void BattlegroundMgr::BuildPvpLogDataPacket(WorldPacket *data, Battleground *bg)
         type |= 32;
 
     // last check on 4.0.6
-    data->Initialize(MSG_PVP_LOG_DATA, (1+1+4+40*bg->GetPlayerScoresSize()));
+    data->Initialize(SMSG_PVP_LOG_DATA, (1+1+4+40*bg->GetPlayerScoresSize()));
     *data << uint8(type);                                   // flags
 
     if ((type & 64) != 0)                                   // arena
@@ -498,7 +498,7 @@ void BattlegroundMgr::BuildPvpLogDataPacket(WorldPacket *data, Battleground *bg)
 
 void BattlegroundMgr::BuildGroupJoinedBattlegroundPacket(WorldPacket *data, GroupJoinBattlegroundResult result)
 {
-    data->Initialize(SMSG_GROUP_JOINED_BATTLEGROUND, 4);
+    data->Initialize(SMSG_BATTLEGROUND_PLAYER_JOINED, 4);
     *data << int32(result);
     if (result == ERR_BATTLEGROUND_JOIN_TIMED_OUT || result == ERR_BATTLEGROUND_JOIN_FAILED)
         *data << uint64(0);                                 // player guid
