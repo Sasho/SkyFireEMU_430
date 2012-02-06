@@ -1159,9 +1159,9 @@ void Battleground::AddPlayer(Player* player)
             player->ResetAllPowers();
         }
         WorldPacket teammate;
-        teammate.Initialize(SMSG_ARENA_OPPONENT_UPDATE, 8);
+/*        teammate.Initialize(SMSG_ARENA_OPPONENT_UPDATE, 8);
         teammate << uint64(player->GetGUID());
-        SendPacketToTeam(team, &teammate, player, false);
+        SendPacketToTeam(team, &teammate, player, false);*/
     }
     else
     {
