@@ -1317,6 +1317,7 @@ enum Opcodes
     SMSG_MOVE_SET_TURN_RATE                          = 0x01695,
     SMSG_MOVE_KNOCK_BACK                             = 0x00EC1,
     SMSG_SET_PLAY_HOVER_ANIM                         = 0x01CC5,
+    SMSG_MULTIPLE_PACKETS                            = 0x00,
     CMSG_MOVE_GRAVITY_DISABLE_ACK                    = 0x021C4,
     CMSG_MOVE_GRAVITY_ENABLE_ACK                     = 0x00321,
     CMSG_MOVE_SET_COLLISION_HEIGHT_ACK               = 0x02305,
