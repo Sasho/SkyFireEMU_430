@@ -34,7 +34,7 @@
 void WorldSession::SendBfInvitePlayerToWar(uint32 BattleId, uint32 ZoneId, uint32 p_time)
 {
     //Send packet
-    WorldPacket data(SMSG_BATTLEFIELD_MGR_ENTRY_INVITE, 16);
+    WorldPacket data(SMSG_BF_MGR_ENTRY_INVITE, 16);
     data << uint32(0);
     data << uint32(ZoneId);
     data << uint64(BattleId | 0x20000);
@@ -47,7 +47,7 @@ void WorldSession::SendBfInvitePlayerToWar(uint32 BattleId, uint32 ZoneId, uint3
 //Param1:(BattleId) the BattleId of Bf
 void WorldSession::SendBfInvitePlayerToQueue(uint32 BattleId)
 {
-    WorldPacket data(SMSG_BATTLEFIELD_MGR_QUEUE_INVITE, 5);
+    WorldPacket data(SMSG_BF_MGR_QUEUE_INVITE, 5);
 
     data << uint8(0);
     data << uint8(1); // warmup
@@ -67,7 +67,7 @@ void WorldSession::SendBfInvitePlayerToQueue(uint32 BattleId)
 //Param2:(ZoneId) the zone where the battle is (4197 for wg)
 void WorldSession::SendBfQueueInviteResponce(uint32 BattleId, uint32 ZoneId)
 {
-    WorldPacket data(SMSG_BATTLEFIELD_MGR_QUEUE_REQUEST_RESPONSE, 11);
+    WorldPacket data(SMSG_BF_MGR_QUEUE_REQUEST_RESPONSE, 11);
     data << uint8(0); // unk, Logging In???
     data << uint64(BattleId);
     data << uint32(ZoneId);
@@ -82,7 +82,7 @@ void WorldSession::SendBfQueueInviteResponce(uint32 BattleId, uint32 ZoneId)
 //Param1:(BattleId) the BattleId of Bf
 void WorldSession::SendBfEntered(uint32 BattleId)
 {
-    WorldPacket data(SMSG_BATTLEFIELD_MGR_ENTERED, 7);
+    WorldPacket data(SMSG_BF_MGR_ENTERING, 7);
     data << uint32(BattleId);
     data << uint8(1);   //unk
     data << uint8(1);   //unk
@@ -94,7 +94,7 @@ void WorldSession::SendBfEntered(uint32 BattleId)
 //Send when player is kick from Battlefield
 void WorldSession::SendBfLeaveMessage(uint32 BattleId)
 {
-    WorldPacket data(SMSG_BATTLEFIELD_MGR_EJECTED, 7);
+    WorldPacket data(SMSG_BF_MGR_EJECTED, 7);
     data << uint8(8);  //byte Reason
     data << uint8(2);  //byte BattleStatus
     data << uint64(BattleId);
