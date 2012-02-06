@@ -1766,7 +1766,7 @@ void WorldSession::HandleEquipmentSetUse(WorldPacket &recv_data)
         _player->SwapItem(item->GetPos(), dstpos);
     }
 
-    WorldPacket data(SMSG_EQUIPMENT_SET_USE_RESULT, 1);
+    WorldPacket data(SMSG_USE_EQUIPMENT_SET_RESULT, 1);
     data << uint8(0);                                       // 4 - equipment swap failed - inventory is full
     SendPacket(&data);
 }
@@ -2144,7 +2144,7 @@ void WorldSession::HandleRandomizeCharNameOpcode(WorldPacket& recv_data)
     std::string name = *GetRandomCharacterName(race, gender);
     uint8 length = name.size() * 2 + 1;
 
-    WorldPacket data(SMSG_RANDOMIZE_CHAR_NAME, 1 + name.size());
+    WorldPacket data(SMSG_GENERATE_RANDOM_CHARACTER_NAME_RESULT, 1 + name.size());
     data << uint8(length);
     data << name;
     SendPacket(&data);
