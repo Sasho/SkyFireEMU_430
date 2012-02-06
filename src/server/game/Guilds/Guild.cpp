@@ -497,7 +497,7 @@ bool Guild::BankTab::SetItem(SQLTransaction& trans, uint8 slotId, Item* pItem)
 
 void Guild::BankTab::SendText(const Guild* guild, WorldSession* session) const
 {
-    WorldPacket data(MSG_QUERY_GUILD_BANK_TEXT, 1 + m_text.size() + 1);
+    WorldPacket data(CMSG_GUILD_BANK_TEXT_QUERY, 1 + m_text.size() + 1);
     data << uint8(m_tabId);
     data << m_text;
 
@@ -2045,7 +2045,7 @@ void Guild::SendInfo(WorldSession* session) const
 
 void Guild::SendEventLog(WorldSession* session) const
 {
-    WorldPacket data(MSG_GUILD_EVENT_LOG_QUERY, 1 + m_eventLog->GetSize() * (1 + 8 + 4));
+    WorldPacket data(CMSG_GUILD_EVENT_LOG_QUERY, 1 + m_eventLog->GetSize() * (1 + 8 + 4));
     m_eventLog->WritePacket(data);
     session->SendPacket(&data);
     sLog->outDebug(LOG_FILTER_GUILD, "WORLD: Sent (MSG_GUILD_EVENT_LOG_QUERY)");
@@ -2057,7 +2057,7 @@ void Guild::SendBankLog(WorldSession* session, uint8 tabId) const
     if (tabId < _GetPurchasedTabsSize() || tabId == GUILD_BANK_MAX_TABS)
     {
         const LogHolder* pLog = m_bankEventLog[tabId];
-        WorldPacket data(MSG_GUILD_BANK_LOG_QUERY, pLog->GetSize() * (4 * 4 + 1) + 1 + 1);
+        WorldPacket data(CMSG_GUILD_BANK_LOG_QUERY, pLog->GetSize() * (4 * 4 + 1) + 1 + 1);
         data << uint8(tabId);
         pLog->WritePacket(data);
         session->SendPacket(&data);
@@ -2104,7 +2104,7 @@ void Guild::SendPermissions(WorldSession* session) const
     uint64 guid = session->GetPlayer()->GetGUID();
     uint8 rankId = session->GetPlayer()->GetRank();
 
-    WorldPacket data(MSG_GUILD_PERMISSIONS, 4 * 15 + 1);
+    WorldPacket data(CMSG_GUILD_PERMISSIONS_QUERY, 4 * 15 + 1);
     data << uint32(rankId);
     data << uint32(_GetRankRights(rankId));
     data << uint32(_GetMemberRemainingMoney(guid));
@@ -2144,7 +2144,7 @@ void Guild::SendPermissions(WorldSession* session) const
 
 void Guild::SendMoneyInfo(WorldSession* session) const
 {
-    WorldPacket data(MSG_GUILD_BANK_MONEY_WITHDRAWN, 4);
+    WorldPacket data(CMSG_GUILD_BANK_WITHDRAW_MONEY, 4);
     data << uint64(_GetMemberRemainingMoney(session->GetPlayer()->GetGUID()));
     session->SendPacket(&data);
     sLog->outDebug(LOG_FILTER_GUILD, "WORLD: Sent MSG_GUILD_BANK_MONEY_WITHDRAWN");
@@ -3188,7 +3188,7 @@ void Guild::GainXP(uint64 xp)
     m_today_xp += xp;
     SaveXP();
 
-    WorldPacket data(SMSG_GUILD_XP_UPDATE, 8*5);
+    WorldPacket data(SMSG_GUILD_XP_EARNED, 8*5);
     data << uint64(GetXPCap());       // max daily xp
     data << uint64(GetNextLevelXP()); // next level XP
     data << uint64(GetXPCap());       // weekly xp
@@ -3211,7 +3211,7 @@ void Guild::LevelUp()
     m_level = level;
     m_nextLevelXP = sObjectMgr->GetXPForGuildLevel(level);
 
-    WorldPacket data(SMSG_GUILD_XP_UPDATE, 8*5);
+    WorldPacket data(SMSG_GUILD_XP_EARNED, 8*5);
     data << uint64(GetXPCap());       // max daily xp
     data << uint64(GetNextLevelXP()); // next level XP
     data << uint64(GetXPCap());       // weekly xp
