@@ -323,7 +323,7 @@ void WorldSession::HandleMovementOpcodes(WorldPacket & recv_data)
     }
 
     // fall damage generation (ignore in flight case that can be triggered also at lags in moment teleportation to another map).
-    if (opcode == MSG_MOVE_FALL_LAND && plMover && !plMover->isInFlight())
+    if (opcode == CMSG_MOVE_FALL_LAND && plMover && !plMover->isInFlight())
         plMover->HandleFall(movementInfo);
 
     if (plMover && ((movementInfo.flags & MOVEMENTFLAG_SWIMMING) != 0) != plMover->IsInWater())
@@ -354,7 +354,7 @@ void WorldSession::HandleMovementOpcodes(WorldPacket & recv_data)
 
     if (plMover)                     // nothing is charmed, or player charmed
     {
-        if (plMover->GetEmoteState() != 0 && opcode == MSG_MOVE_START_FORWARD)
+        if (plMover->GetEmoteState() != 0 && opcode == CMSG_MOVE_START_FORWARD)
            plMover->SetEmoteState(0);
 
         plMover->UpdateFallInformationIfNeed(movementInfo, opcode);
@@ -537,7 +537,7 @@ void WorldSession::HandleMoveKnockBackAck(WorldPacket & recv_data)
     ReadMovementInfo(recv_data, &movementInfo);
     _player->_movementInfo = movementInfo;
 
-    WorldPacket data(MSG_MOVE_KNOCK_BACK, 66);
+    WorldPacket data(SMSG_MOVE_KNOCK_BACK, 66);
     data.appendPackGUID(guid);
     _player->BuildMovementPacket(&data);
 
