@@ -22365,7 +22365,7 @@ void Player::SendInitialPacketsAfterAddToMap()
     // manual send package (have code in HandleEffect(this, AURA_EFFECT_HANDLE_SEND_FOR_CLIENT, true); that must not be re-applied.
     if (HasAuraType(SPELL_AURA_MOD_ROOT))
     {
-        WorldPacket data2(SMSG_FORCE_MOVE_ROOT, 10);
+        WorldPacket data2(SMSG_MOVE_ROOT, 10);
         data2.append(GetPackGUID());
         data2 << uint32(2);
         SendMessageToSet(&data2, true);
